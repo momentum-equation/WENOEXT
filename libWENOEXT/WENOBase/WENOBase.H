@@ -264,6 +264,10 @@ class WENOBase
             const WENO::globalfvMesh& globalfvMesh,
             volIntegralType& volIntegrals
         );
+        
+        //- Get tolerance for matrix DB 
+        //  Helper function as matrixDB has to be constructed with WENOBase 
+        scalar getMatrixDBTol(const fvMesh& mesh);
 
 
 public:

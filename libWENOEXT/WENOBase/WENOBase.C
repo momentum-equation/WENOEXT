@@ -634,6 +634,8 @@ Foam::WENOBase::WENOBase
     const fvMesh& mesh,
     const label polOrder
 )
+:
+    LSmatrix_(getMatrixDBTol(mesh))
 {
     /**************************** General Note ********************************\
     Collecting Stencils:
@@ -1384,6 +1386,27 @@ void Foam::WENOBase::writeList
     {
         osB<< B_[cellI] << endl;
     }
+}
+
+
+Foam::scalar Foam::WENOBase::getMatrixDBTol(const fvMesh& mesh)
+{
+    // Read expert factor
+    IOdictionary WENODict
+    (
+        IOobject
+        (
+            "WENODict",
+            mesh.time().caseSystem(),
+            mesh,
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE
+        )
+    );
+
+    const scalar tol =
+        WENODict.lookupOrAddDefault<scalar>("tol", 1E-9);
+    return tol;
 }
 
 

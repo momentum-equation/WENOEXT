@@ -56,7 +56,49 @@ Within your `system/fvSchemes` file,
 Here the first index '2' represents the order of the WENO scheme and the second index can be either
 '1' for bounded or '0' for unbounded.
 
+### Expert Parameters
 
+You can select some expert parameters in the file system/WENODict
+```
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      WENODict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// This dict contains expert parameters, which modify the standard WENO scheme.
+
+  //- Stencil extension ratio:
+  //- < 2.5:  decreased computational effort. May also decrease stability 
+	//			and accuracy 
+	//- > 2.5 : higher stability. May influence the accuracy of the SVD
+	extendRatio		2.5;
+	
+	//- WENO stencil weighting parameters:
+	p				4.0;
+	dm				1000.0;
+
+  //- Calculate best conditioned matrix
+  //  This can save memory especially for high order WENO scheme 
+  //  Increases the calculation time! Default is off
+  bestConditioned true;
+  
+  // Define the tolerance for matrix databank, default is 1E-9
+  tol 1E-9;
+  
+// ************************************************************************* //
+```
 
 ## Tutorials
 

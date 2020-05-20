@@ -107,18 +107,24 @@ Foam::matrixDB::similar
         // Check if it is within the tolerance
         const scalarRectangularMatrix& cmpA = it->second;
         
-        scalar diff = 0;
+        bool isValid = true;
         if (cmpA.size() == A.size())
         {
             for (int i = 0; i < A.m(); i++)
             {
                 for (int j = 0; j < A.n(); j++)
                 {
-                    diff += mag(cmpA[i][j] - A[i][j]);
+                    if (mag(cmpA[i][j] - A[i][j]) > tol_)
+                    {
+                        isValid = false;
+                        break;
+                    }
                 }
+                if (isValid == false)
+                    break;
             }
             
-            if (diff < tol_)
+            if (isValid)
             {
                 counter_++;
                 return it;
@@ -257,7 +263,6 @@ void Foam::matrixDB::read(Istream& is)
         {
             is >> key;
             is >> matrix;
-            DB_.emplace(key,matrix);
             LSmatrix_[cellI][stencilI].add(std::move(matrix));
         }
     }
