@@ -72,18 +72,29 @@ bool Foam::matrixDB::scalarRectangularMatrixPtr::valid() const
 
 // * * * * * * * * * * * * * * * matrixDB  * * * * * * * * * * * * * * * * * //
 
-std::multimap<Foam::scalar,Foam::scalarRectangularMatrix>::const_iterator
+std::multimap<uint32_t,Foam::scalarRectangularMatrix>::const_iterator
 Foam::matrixDB::similar
 (
     const scalarRectangularMatrix&& A
 )
 {
-    scalar key = 0;
+    // Convert the double to float to reduce the precision and copy to 
+    // uint32_t
+    auto doubleToInt = [](float x) -> uint32_t
+    {
+        uint32_t bits;
+        memcpy(&bits, &x, sizeof x);
+        return bits;
+    };
+    
+    
+    uint32_t key = 0;
     for (int i = 0; i < A.m(); i++)
     {
         for (int j = 0; j < A.n(); j++)
         {
-            key += A[i][j]*(i+1)*(j+1);
+            uint32_t index = i*(A.n())+j;
+            key += doubleToInt(A[i][j])*index;
         }
     }
 
@@ -129,7 +140,7 @@ Foam::matrixDB::similar
                 counter_++;
                 return it;
             }
-        }        
+        }
     }
 
     // Use insert with hint 
@@ -168,9 +179,9 @@ int Foam::matrixDB::hashMatrix
      * If the argument is NaN, the result is the long
      * integer representing the actual NaN value.  
      */
-    auto doubleToRawBits = [](double x) -> uint64_t
+    auto doubleToRawBits = [](double x) -> uint32_t
     {
-        uint64_t bits;
+        uint32_t bits;
         memcpy(&bits, &x, sizeof bits);
         return bits;
     };
@@ -225,8 +236,7 @@ void Foam::matrixDB::info()
     
     Pout << "\tMatrix Database Statistics: "<<nl
          << "\t\tTotal Number of matrices: "<< numElements << nl
-         << "\t\tNumber matrices stored: "<<DB_.size() <<nl
-         << "\t\tCounter: "<<counter_<< endl;
+         << "\t\tNumber matrices stored: "<<DB_.size() <<endl;
 }
 
 
